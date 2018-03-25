@@ -31,26 +31,25 @@ void CalcForAllCpu(int numCpu)
 		}
 		start[cpu][0] = work_jiffies;
 		start[cpu][1] = tot_jiffies;
-
 	}
 	cpuStat.close();
 	usleep(1000000);
 	cpuStat.open("/proc/stat");
-        for(int cpu=0;cpu<5;cpu++)
-        {
+  for(int cpu=0;cpu<5;cpu++)
+  {
 		cpuStat >> crap;
 		work_jiffies = 0;
 		tot_jiffies = 0;
-                for(int i=0;i<10;i++)
-                {
-                        cpuStat >> k;
-                        if(i<3)
-                                work_jiffies+=k;
-                        tot_jiffies+=k;
-                }
-                end[cpu][0] = work_jiffies;
-                end[cpu][1] = tot_jiffies;
-        }
+    for(int i=0;i<10;i++)
+    {
+      cpuStat >> k;
+      if(i<3)
+        work_jiffies+=k;
+      tot_jiffies+=k;
+    }
+    end[cpu][0] = work_jiffies;
+    end[cpu][1] = tot_jiffies;
+  }
 	for(int i=0;i<5;i++)
 		perc[i] = double((end[i][0] - start[i][0]))/double((end[i][1] - start[i][1]));
 }
