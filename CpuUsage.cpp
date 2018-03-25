@@ -5,16 +5,19 @@
 #include<unistd.h>
 #include<signal.h>
 #include<stdlib.h>
+
 using namespace std;
+
 int start[5][2], end[5][2];
 double perc[5];
-void CalcForAllCpu()
+
+void CalcForAllCpu(int numCpu)
 {
 	string crap;
 	int tot_jiffies, work_jiffies, k;
 	ifstream cpuStat, c2;
 	cpuStat.open("/proc/stat");
-	for(int cpu=0;cpu<5;cpu++)
+	for(int cpu=0;cpu<numCpu;cpu++)
 	{
 		cpuStat >> crap;
 		work_jiffies = 0;
@@ -52,6 +55,11 @@ void CalcForAllCpu()
 		perc[i] = double((end[i][0] - start[i][0]))/double((end[i][1] - start[i][1]));
 }
 
+int numberOfCpus()
+{
+	return sysconf(_SC_NPROCESSORS_ONLN);
+}
+
 void handle_sig(int sig)
 {
 	cout << "\033[2J\033[1;1H";
@@ -61,14 +69,14 @@ void handle_sig(int sig)
 int main()
 {
 	signal(SIGINT, handle_sig);
+	int numCpus = numberOfCpus();
 	while(1)
 	{
-		CalcForAllCpu();
+		CalcForAllCpu(numCpus);
 		cout << "\033[2J\033[1;1H";
 		cout<<"CPU Average"<<": "<<perc[0]*100<<"%"<<endl;
-		for(int i=1;i<5;i++)
+		for(int i=1;i<numCpus+1;i++)
 			cout<<"CPU "<<i-1<<": "<<perc[i]*100<<"%"<<endl;
 	}
-
 
 }
